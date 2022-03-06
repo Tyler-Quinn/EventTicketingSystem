@@ -27,7 +27,3 @@ const Header = () => {
 }
 
 export default Header
-
-/*
-<Button text='Connect Wallet' onClick={login}></Button>
-*/
