@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { TextField, makeStyles, Typography } from '@material-ui/core'
 import Button from '../../components/buttons/Button'
 import { useWeb3Context } from '../../contexts/Web3Context'
@@ -22,7 +22,7 @@ const Create = () => {
     const [price, setPrice] = useState('')
     const [quantity, setQuantity] = useState('')
 
-    const { provider, address, balance } = useWeb3Context()
+    const { provider, address, balance, connectedNetworkId } = useWeb3Context()
 
     const handleNameChange = (e) => {
         setName(e.target.value)
@@ -46,8 +46,8 @@ const Create = () => {
 
     const displayName = (e) => {
         e.preventDefault()
-        console.log(name)
-        console.log(balance)
+        console.log(address)
+        console.log(connectedNetworkId)
     }
 
     return (
