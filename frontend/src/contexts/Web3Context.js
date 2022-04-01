@@ -54,6 +54,7 @@ const Web3ContextProvider = ({ children }) => {
                         const { provider, name, instance, type, connect, dashboard, icons } = wallet
                         if (provider) {
                             const ethersProvider = new ethers.providers.Web3Provider(provider, 'any')
+                            //const ethersProvider = new ethers.providers.JsonRpcProvider(url)
                             if (provider.enable && !provider.isMetaMask) {
                                 // needed for WalletConnect and some other wallets
                                 await provider.enable()
@@ -174,6 +175,8 @@ const Web3ContextProvider = ({ children }) => {
                 disconnectWallet,
                 walletName,
                 getWriteContract,
+                ticketSales,
+                dai,
             }}
         >
             { children }

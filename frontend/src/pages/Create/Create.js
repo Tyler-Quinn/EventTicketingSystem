@@ -21,8 +21,11 @@ const Create = () => {
     const [name, setName] = useState('')
     const [price, setPrice] = useState('')
     const [quantity, setQuantity] = useState('')
+    const [nameValid, setNameValid] = useState(false)
+    const [priceValid, setPriceValid] = useState(false)
+    const [quantityValid, setQuantityValid] = useState(false)
 
-    const { provider, address, balance, connectedNetworkId } = useWeb3Context()
+    const { provider, address, ticketSales } = useWeb3Context()
 
     const handleNameChange = (e) => {
         setName(e.target.value)
@@ -44,11 +47,48 @@ const Create = () => {
         setQuantity(number)
     }
 
-    const displayName = (e) => {
-        e.preventDefault()
-        console.log(address)
-        console.log(connectedNetworkId)
+    const handleCreateEvent = (e) => {
+        try {
+            if (nameValid && priceValid && quantityValid) {
+                ticketSales.createEvent(name, price, quantity)
+            } else {
+                console.log("Cannot create event, inputs invalid")
+            }
+        } catch (err) {
+            console.log("ticketSales contract not write-able")
+            console.log(err)
+        }
+        console.log(nameValid)
+        console.log(priceValid)
+        console.log(quantityValid)
     }
+
+    // Update nameValid on change of the name state variable
+    useEffect(() => {
+        if (name != '') {
+            setNameValid(true)
+        } else {
+            setNameValid(false)
+        }
+    }, [name])
+
+    // Update priceValid on change of the price state variable
+    useEffect(() => {
+        if (parseFloat(price) > 0) {
+            setPriceValid(true)
+        } else {
+            setPriceValid(false)
+        }
+    }, [price])
+
+    // Update quantityValid on change of the quantity state variable
+    useEffect(() => {
+        if (parseFloat(quantity) > 0) {
+            setQuantityValid(true)
+        } else {
+            setQuantityValid(false)
+        }
+    }, [quantity])
 
     return (
         <div align="center">
@@ -66,7 +106,7 @@ const Create = () => {
             <TextField
                 className={classes.field}
                 id="outlined-basic"
-                label="Price"
+                label="Price (Dai)"
                 type="text"
                 variant="outlined"
                 onChange={handlePriceChange}
@@ -81,7 +121,7 @@ const Create = () => {
                 onChange={handleTicketQuantityChange}
                 value={quantity}
             />
-            <Button text='Create' onClick={displayName}></Button>
+            <Button text='Create' onClick={handleCreateEvent}></Button>
         </div>
     )
 }
