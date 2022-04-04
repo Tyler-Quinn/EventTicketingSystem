@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { TextField, makeStyles, Typography } from '@material-ui/core'
 import Button from '../../components/buttons/Button'
 import { useWeb3Context } from '../../contexts/Web3Context'
+import { ethers } from 'ethers'
 
 const useStyles = makeStyles({
     field: {
@@ -24,6 +25,7 @@ const Create = () => {
     const [nameValid, setNameValid] = useState(false)
     const [priceValid, setPriceValid] = useState(false)
     const [quantityValid, setQuantityValid] = useState(false)
+    const [txState, setTxState] = useState('None')
 
     const { provider, address, ticketSales } = useWeb3Context()
 
@@ -47,20 +49,29 @@ const Create = () => {
         setQuantity(number)
     }
 
-    const handleCreateEvent = (e) => {
+    const handleCreateEvent = async (e) => {
         try {
             if (nameValid && priceValid && quantityValid) {
-                ticketSales.createEvent(name, price, quantity)
+                const tx = await ticketSales.createEvent(name, ethers.utils.parseUnits(price, "ether"), quantity)
+                setTxState("Pending")
+                checkEvents()
             } else {
                 console.log("Cannot create event, inputs invalid")
             }
         } catch (err) {
-            console.log("ticketSales contract not write-able")
+            setTxState("None")
+            console.log("Cannot write to ticketSales contract")
             console.log(err)
         }
-        console.log(nameValid)
-        console.log(priceValid)
-        console.log(quantityValid)
+    }
+
+    const checkEvents = () => {
+        const filter = ticketSales.filters.NewEvent(null,address.toString())
+        ticketSales.on(filter, (_eventNameHash, _owner, _ticketPrice, _ticketQuantity) => {
+            console.log("Got Event: NewEvent")
+            console.log(_eventNameHash, _owner, _ticketPrice.toString(), _ticketQuantity.toString())
+            setTxState("Confirmed")
+        })
     }
 
     // Update nameValid on change of the name state variable
@@ -70,6 +81,7 @@ const Create = () => {
         } else {
             setNameValid(false)
         }
+        setTxState("None")
     }, [name])
 
     // Update priceValid on change of the price state variable
@@ -79,6 +91,7 @@ const Create = () => {
         } else {
             setPriceValid(false)
         }
+        setTxState("None")
     }, [price])
 
     // Update quantityValid on change of the quantity state variable
@@ -88,6 +101,7 @@ const Create = () => {
         } else {
             setQuantityValid(false)
         }
+        setTxState("None")
     }, [quantity])
 
     return (
@@ -121,7 +135,7 @@ const Create = () => {
                 onChange={handleTicketQuantityChange}
                 value={quantity}
             />
-            <Button text='Create' onClick={handleCreateEvent}></Button>
+            <Button text={txState=="None" ? "Create" : txState} onClick={handleCreateEvent}></Button>
         </div>
     )
 }
