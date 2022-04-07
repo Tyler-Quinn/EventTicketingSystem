@@ -27,7 +27,7 @@ const Create = () => {
     const [quantityValid, setQuantityValid] = useState(false)
     const [txState, setTxState] = useState('None')
 
-    const { provider, address, ticketSales } = useWeb3Context()
+    const { address, ticketSales } = useWeb3Context()
 
     const handleNameChange = (e) => {
         setName(e.target.value)
@@ -42,6 +42,7 @@ const Create = () => {
         } else {
             setPrice(number)
         }
+        console.log(ticketSales)
     }
 
     const handleTicketQuantityChange = (e) => {
@@ -57,6 +58,7 @@ const Create = () => {
                 checkEvents()
             } else {
                 console.log("Cannot create event, inputs invalid")
+                setTxState("None")
             }
         } catch (err) {
             setTxState("None")
