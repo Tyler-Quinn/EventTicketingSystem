@@ -30,9 +30,7 @@ const Manage = () => {
     const checkEvents = async () => {
         const filter = ticketSales.filters.NewEvent(null,address.toString())
         const returnEvents = await ticketSales.queryFilter(filter, 0, await provider.getBlockNumber())
-        console.log(returnEvents)
         setEvents(returnEvents)
-        console.log(events)
     }
 
     useEffect( async () => {
@@ -47,7 +45,6 @@ const Manage = () => {
             console.log("Connect wallet")
             setEvents(undefined)
         }
-        console.log(events)
     }, [provider, address, ticketSales])
 
     return (
