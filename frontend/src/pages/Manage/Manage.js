@@ -19,24 +19,26 @@ const useStyles = makeStyles({
 const Manage = () => {
     const classes = useStyles()
 
-    const [events, setEvents] = useState()
+    const [events, setEvents] = useState(undefined)
+    const [eventHashes, setEventHashes] = useState(undefined)
 
     const { provider, address, ticketSales } = useWeb3Context()
 
     const handleShowEvents = (e) => {
         console.log(events)
+        console.log(eventHashes)
     } 
 
     const checkEvents = async () => {
         const filter = ticketSales.filters.NewEvent(null,address.toString())
         const returnEvents = await ticketSales.queryFilter(filter, 0, await provider.getBlockNumber())
-        setEvents(returnEvents)
+        await setEvents(returnEvents)
     }
 
-    useEffect( async () => {
+    useEffect(() => {
         if (provider) {
             if (ticketSales) {
-                await checkEvents()
+                checkEvents()
             } else {
                 console.log("ticketSales contract not connected")
                 setEvents(undefined)
@@ -47,9 +49,23 @@ const Manage = () => {
         }
     }, [provider, address, ticketSales])
 
+    useEffect(() => {
+        if (events) {
+            const eventsArrayLength = events.length
+            const eventHashArray = []
+            for (let i = 0; i < eventsArrayLength; i++) {
+                eventHashArray[i] = events[i].args[0]
+            }
+            setEventHashes(eventHashArray)
+            console.log(eventHashArray)
+        }
+    }, [events])
+
     return (
         <div align="center">
-            <h4>Manage Page</h4>
+            <Typography variant="h4">
+                Your Events
+            </Typography>
             <Button text="Events" onClick={handleShowEvents}></Button>
         </div>
     )
