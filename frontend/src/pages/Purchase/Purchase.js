@@ -1,10 +1,12 @@
 import React from 'react'
-//import Box from '@material-ui/core/Box'
+import { TextField, makeStyles, Typography } from '@material-ui/core'
 
 const Purchase = () => {
     return (
-        <div>
-            <h4>Purchase Page</h4>
+        <div align="center">
+            <Typography variant="h4">
+                Purchase Tickets
+            </Typography>
         </div>
     )
 }
