@@ -12,7 +12,7 @@ contract TicketSales is TicketAccounting, Ownable {
     /* ===== State ===== */
 
     IERC20 public dai;
-    mapping (address => mapping (bytes32 => uint256)) private balances;
+    mapping (address => mapping (bytes32 => uint256)) public balances;
 
     /* ===== Constructor ===== */
 
@@ -27,9 +27,9 @@ contract TicketSales is TicketAccounting, Ownable {
 
     /* ===== Public Getters ===== */
 
-    function getBalance(address _address, bytes32 _asset) public view returns(uint256) {
-        return balances[_address][_asset];
-    }
+    //function getBalance(address _address, bytes32 _asset) public view returns(uint256) {
+    //    return balances[_address][_asset];
+    //}
 
     /* ===== Functions ===== */
 

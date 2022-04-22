@@ -21,8 +21,13 @@ const Manage = () => {
 
     const [events, setEvents] = useState(undefined)
     const [eventHashes, setEventHashes] = useState(undefined)
+    const [claimDaiValue, setClaimDaiValue] = useState('0')
 
-    const { provider, address, ticketSales } = useWeb3Context()
+    const { provider, address, ticketSales, dai } = useWeb3Context()
+
+    const handleClaim = async () => {
+
+    }
 
     const handleShowEvents = (e) => {
         console.log(events)
@@ -43,7 +48,6 @@ const Manage = () => {
                 console.log("ticketSales contract not connected")
                 setEvents(undefined)
             }
-        } else {
             console.log("Connect wallet")
             setEvents(undefined)
         }

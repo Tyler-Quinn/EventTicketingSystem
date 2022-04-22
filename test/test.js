@@ -263,7 +263,7 @@ contract("TicketSales", accounts => {
         assert(JSON.stringify(result) == JSON.stringify(web3.utils.toBN(0)));
         result = await ticketSales.getEventData('TestEvent0');
         assert(JSON.stringify(result[3]) == JSON.stringify(web3.utils.toBN(1)));
-        result = await ticketSales.getBalance(accounts[0], web3.utils.asciiToHex('DAI'));
+        result = await ticketSales.balances(accounts[0], web3.utils.asciiToHex('DAI'));
         assert(await JSON.stringify(result) == JSON.stringify(web3.utils.toBN(web3.utils.toWei('0'))));
         try {
             await ticketSales.buyTicketDai('TestEvent0', accounts[2], {from: accounts[2]});
@@ -277,7 +277,7 @@ contract("TicketSales", accounts => {
         assert(JSON.stringify(result) == JSON.stringify(web3.utils.toBN(1)));
         result = await ticketSales.getEventData('TestEvent0');
         assert(JSON.stringify(result[3]) == JSON.stringify(web3.utils.toBN(2)));
-        result = await ticketSales.getBalance(accounts[0], web3.utils.asciiToHex('DAI'));
+        result = await ticketSales.balances(accounts[0], web3.utils.asciiToHex('DAI'));
         assert(await JSON.stringify(result) == JSON.stringify(web3.utils.toBN(web3.utils.toWei('40'))));
     });
 
@@ -498,7 +498,7 @@ contract("TicketSales", accounts => {
     });
 
     it('Claim tokens', async () => {
-        let result = await ticketSales.getBalance(accounts[0], web3.utils.asciiToHex('DAI'), {from: accounts[0]});
+        let result = await ticketSales.balances(accounts[0], web3.utils.asciiToHex('DAI'), {from: accounts[0]});
         assert(JSON.stringify(result) == JSON.stringify(web3.utils.toBN(web3.utils.toWei('120'))));
         assert(JSON.stringify(await dai.balanceOf(accounts[0])) == JSON.stringify(await web3.utils.toBN(web3.utils.toWei('10000'))));
         try {
@@ -507,7 +507,7 @@ contract("TicketSales", accounts => {
             assert(false);
             return;
         }
-        result = await ticketSales.getBalance(accounts[0], web3.utils.asciiToHex('DAI'), {from: accounts[0]});
+        result = await ticketSales.balances(accounts[0], web3.utils.asciiToHex('DAI'), {from: accounts[0]});
         assert(JSON.stringify(result) == JSON.stringify(web3.utils.toBN(web3.utils.toWei('0'))));
         assert(JSON.stringify(await dai.balanceOf(accounts[0])) == JSON.stringify(await web3.utils.toBN(web3.utils.toWei('10120'))));
     });
