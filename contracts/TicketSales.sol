@@ -25,12 +25,6 @@ contract TicketSales is TicketAccounting, Ownable {
     event TicketBought(bytes32 indexed _eventNameHash, address indexed _buyer, address indexed _receiver);
     event BalanceClaimed(address indexed _receiver, bytes32 _asset, uint256 _amount);
 
-    /* ===== Public Getters ===== */
-
-    //function getBalance(address _address, bytes32 _asset) public view returns(uint256) {
-    //    return balances[_address][_asset];
-    //}
-
     /* ===== Functions ===== */
 
     // Owner of the Event can send tickets for free
