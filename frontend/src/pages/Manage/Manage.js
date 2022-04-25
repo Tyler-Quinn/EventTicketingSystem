@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import { TextField, makeStyles, Typography } from '@material-ui/core'
+import Card from '@material-ui/core/Card'
+import Box from '@material-ui/core/Box'
+import Grid from '@material-ui/core/Grid'
 import Button from '../../components/buttons/Button'
 import { useWeb3Context } from '../../contexts/Web3Context'
 import { ethers } from 'ethers'
@@ -21,12 +24,16 @@ const Manage = () => {
 
     const [events, setEvents] = useState(undefined)
     const [eventHashes, setEventHashes] = useState(undefined)
-    const [claimDaiValue, setClaimDaiValue] = useState('0')
+    const [claimBalance, setClaimBalance] = useState('0')
 
     const { provider, address, ticketSales, dai } = useWeb3Context()
 
     const handleClaim = async () => {
-
+        if (provider) {
+            if (ticketSales) {
+                
+            }
+        }
     }
 
     const handleShowEvents = (e) => {
@@ -40,10 +47,19 @@ const Manage = () => {
         await setEvents(returnEvents)
     }
 
+    const updateClaimBalance = async () => {
+        if (provider) {
+            if (ticketSales) {
+                await setClaimBalance(await ticketSales.balances(address.toString(), ethers.utils.formatBytes32String('DAI')))
+            }
+        }
+    }
+
     useEffect(() => {
         if (provider) {
             if (ticketSales) {
                 checkEvents()
+                updateClaimBalance()
             } else {
                 console.log("ticketSales contract not connected")
                 setEvents(undefined)
@@ -71,6 +87,60 @@ const Manage = () => {
                 Your Events
             </Typography>
             <Button text="Events" onClick={handleShowEvents}></Button>
+            <Card
+                className={classes.field}
+            >
+                <Grid container>
+                    <Grid item xs={12}>
+                        <Box
+                            sx={{
+                                textAlign: "left",
+                                ml: 2
+                            }}
+                        >
+                            <Typography variant="h6">
+                                Claim Balance
+                            </Typography>
+                        </Box>
+                    </Grid>
+                    <Grid item xs={3}>
+                        <Box
+                            sx={{
+                                textAlign: "left",
+                                ml: 2,
+                                mt: 1,
+                                mb: 1
+                            }}
+                        >
+                            <Button text="Claim" onClick={handleClaim}></Button>
+                        </Box>
+                    </Grid>
+                    <Grid item xs={8}>
+                        <Box
+                            sx={{
+                                textAlign: "right",
+                                mt: 1,
+                                mb: 1,
+                                mr: 2
+                            }}
+                        >
+                            {claimBalance}
+                        </Box>
+                    </Grid>
+                    <Grid item xs={1}>
+                        <Box
+                            sx={{
+                                textAlign: "right",
+                                mr: 2,
+                                mt: 1,
+                                mb: 1
+                            }}
+                        >
+                            <Typography align="right">DAI</Typography>
+                        </Box>
+                    </Grid>
+                </Grid>
+            </Card>
         </div>
     )
 }
