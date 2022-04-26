@@ -27,7 +27,7 @@ const Create = () => {
     const [quantityValid, setQuantityValid] = useState(false)
     const [txState, setTxState] = useState('None')
 
-    const { address, ticketSales } = useWeb3Context()
+    const { address, ticketSales, dai } = useWeb3Context()
 
     const handleNameChange = (e) => {
         setName(e.target.value)
@@ -55,7 +55,7 @@ const Create = () => {
             if (nameValid && priceValid && quantityValid) {
                 const tx = await ticketSales.createEvent(name, ethers.utils.parseUnits(price, "ether"), quantity)
                 setTxState("Pending")
-                checkEvents()
+                checkNewEvent()
             } else {
                 console.log("Cannot create event, inputs invalid")
                 setTxState("None")
@@ -67,7 +67,7 @@ const Create = () => {
         }
     }
 
-    const checkEvents = () => {
+    const checkNewEvent = () => {
         const filter = ticketSales.filters.NewEvent(null,address.toString())
         ticketSales.on(filter, (_eventNameHash, _owner, _ticketPrice, _ticketQuantity) => {
             console.log("Got Event: NewEvent")

@@ -25,14 +25,27 @@ const Manage = () => {
     const [events, setEvents] = useState(undefined)
     const [eventHashes, setEventHashes] = useState(undefined)
     const [claimBalance, setClaimBalance] = useState('0')
+    const [txStateClaimButton, setTxStateClaimButton] = useState("None")
 
     const { provider, address, ticketSales, dai } = useWeb3Context()
 
     const handleClaim = async () => {
-        if (provider) {
-            if (ticketSales) {
-                
+        try {
+            if (provider) {
+                if (ticketSales) {
+                    const tx = await ticketSales.claimBalance(dai.address.toString(), ethers.utils.formatBytes32String('DAI'))
+                    setTxStateClaimButton("Pending")
+                    checkBalanceClaimed()
+                } else {
+                    throw new Error("Cannot connect to ticketSales contract")
+                }
+            } else {
+                throw new Error("No valid provider")
             }
+        } catch (err) {
+            setTxStateClaimButton("None")
+            console.log("Cannot write to ticketSales contract")
+            console.log(err)
         }
     }
 
@@ -41,7 +54,16 @@ const Manage = () => {
         console.log(eventHashes)
     } 
 
-    const checkEvents = async () => {
+    const checkBalanceClaimed = async () => {
+        const filter = ticketSales.filters.BalanceClaimed(address.toString())
+        ticketSales.on(filter, (_receiver, _asset, _amount) => {
+            console.log("Got Event: BalanceClaimed")
+            console.log(_receiver, _asset, _amount)
+            setTxStateClaimButton("Confirmed")
+        })
+    }
+
+    const checkNewEvent = async () => {
         const filter = ticketSales.filters.NewEvent(null,address.toString())
         const returnEvents = await ticketSales.queryFilter(filter, 0, await provider.getBlockNumber())
         await setEvents(returnEvents)
@@ -50,7 +72,7 @@ const Manage = () => {
     const updateClaimBalance = async () => {
         if (provider) {
             if (ticketSales) {
-                await setClaimBalance(await ticketSales.balances(address.toString(), ethers.utils.formatBytes32String('DAI')))
+                await setClaimBalance(await ticketSales.balances(address.toString(), ethers.utils.formatBytes32String("DAI")))
             }
         }
     }
@@ -58,7 +80,7 @@ const Manage = () => {
     useEffect(() => {
         if (provider) {
             if (ticketSales) {
-                checkEvents()
+                checkNewEvent()
                 updateClaimBalance()
             } else {
                 console.log("ticketSales contract not connected")
@@ -112,7 +134,7 @@ const Manage = () => {
                                 mb: 1
                             }}
                         >
-                            <Button text="Claim" onClick={handleClaim}></Button>
+                            <Button text={txStateClaimButton=="None" ? "Claim" : txStateClaimButton} onClick={handleClaim}></Button>
                         </Box>
                     </Grid>
                     <Grid item xs={8}>
