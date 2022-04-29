@@ -4,6 +4,10 @@ import Card from '@material-ui/core/Card'
 import Box from '@material-ui/core/Box'
 import Grid from '@material-ui/core/Grid'
 import Button from '../../components/buttons/Button'
+import Select from '@material-ui/core/Select'
+import MenuItem from '@material-ui/core/MenuItem'
+import { InputLabel } from '@material-ui/core'
+import FormControl from '@material-ui/core/FormControl'
 import { useWeb3Context } from '../../contexts/Web3Context'
 import { ethers } from 'ethers'
 
@@ -24,10 +28,13 @@ const Manage = () => {
 
     const [events, setEvents] = useState(undefined)
     const [eventHashes, setEventHashes] = useState(undefined)
-    const [claimBalance, setClaimBalance] = useState('0')
+    const [claimBalance, setClaimBalance] = useState(0)
     const [txStateClaimButton, setTxStateClaimButton] = useState("None")
+    const [selectedEvent, setSelectedEvent] = useState("Choose Event")
 
     const { provider, address, ticketSales, dai } = useWeb3Context()
+
+    const testArray = [1,2,3,47]
 
     const handleClaim = async () => {
         try {
@@ -52,7 +59,12 @@ const Manage = () => {
     const handleShowEvents = (e) => {
         console.log(events)
         console.log(eventHashes)
+        console.log(selectedEvent)
     } 
+
+    const handleEventDropdownSelect = (e) => {
+        setSelectedEvent(e.target.value)
+    }
 
     const checkBalanceClaimed = async () => {
         const filter = ticketSales.filters.BalanceClaimed(address.toString())
@@ -72,9 +84,42 @@ const Manage = () => {
     const updateClaimBalance = async () => {
         if (provider) {
             if (ticketSales) {
-                await setClaimBalance(await ticketSales.balances(address.toString(), ethers.utils.formatBytes32String("DAI")))
-            }
-        }
+                try {
+                    const bal = await ticketSales.balances(address, ethers.utils.formatBytes32String("DAI"))
+                    setClaimBalance(bal)
+                } catch (err) {
+                    setClaimBalance(0)
+                }
+            } else { setClaimBalance(0) }
+        } else { setClaimBalance(0) }
+    }
+
+    const renderEventDetails = () => {
+        if (provider) {
+            if (ticketSales) {
+                try {
+                    return (
+                        <Card
+                            className={classes.field}
+                        >
+                            <FormControl className={classes.field}>
+                                <InputLabel>Event</InputLabel>
+                                <Select value={selectedEvent} onChange={handleEventDropdownSelect}>
+                                    {eventHashes ? eventHashes.map((element, index) => {
+                                        return (
+                                            <MenuItem value={element} key={index}>
+                                                {eventHashes[index]}
+                                            </MenuItem>
+                                        )
+                                        }) : null
+                                    }
+                                </Select>
+                            </FormControl>
+                        </Card>
+                    )
+                } catch (err) { return null }
+            } else { return null }
+        } else { return null }
     }
 
     useEffect(() => {
@@ -108,7 +153,9 @@ const Manage = () => {
             <Typography variant="h4">
                 Your Events
             </Typography>
+
             <Button text="Events" onClick={handleShowEvents}></Button>
+
             <Card
                 className={classes.field}
             >
@@ -163,6 +210,11 @@ const Manage = () => {
                     </Grid>
                 </Grid>
             </Card>
+
+            <Box>
+                {renderEventDetails}
+            </Box>
+            
         </div>
     )
 }
