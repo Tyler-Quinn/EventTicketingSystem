@@ -30,11 +30,11 @@ const Manage = () => {
     const [eventHashes, setEventHashes] = useState(undefined)
     const [claimBalance, setClaimBalance] = useState(0)
     const [txStateClaimButton, setTxStateClaimButton] = useState("None")
-    const [selectedEvent, setSelectedEvent] = useState("Choose Event")
+    const [selectedEvent, setSelectedEvent] = useState(undefined)
+    const [eventTicketQuantity, setEventTicketQuantity] = useState(undefined)
+    const [eventTicketQuantityIssued, setEventTicketQuantityIssued] = useState(undefined)
 
     const { provider, address, ticketSales, dai } = useWeb3Context()
-
-    const testArray = [1,2,3,47]
 
     const handleClaim = async () => {
         try {
@@ -56,14 +56,15 @@ const Manage = () => {
         }
     }
 
-    const handleShowEvents = (e) => {
+    const handleShowEvents = async (e) => {
         console.log(events)
         console.log(eventHashes)
         console.log(selectedEvent)
+        console.log(eventTicketQuantity)
     } 
 
-    const handleEventDropdownSelect = (e) => {
-        setSelectedEvent(e.target.value)
+    const handleEventDropdownSelect = async (e) => {
+        await setSelectedEvent(e.target.value)
     }
 
     const checkBalanceClaimed = async () => {
@@ -102,19 +103,46 @@ const Manage = () => {
                         <Card
                             className={classes.field}
                         >
-                            <FormControl className={classes.field}>
-                                <InputLabel>Event</InputLabel>
-                                <Select value={selectedEvent} onChange={handleEventDropdownSelect}>
-                                    {eventHashes ? eventHashes.map((element, index) => {
-                                        return (
-                                            <MenuItem value={element} key={index}>
-                                                {eventHashes[index]}
-                                            </MenuItem>
-                                        )
-                                        }) : null
-                                    }
-                                </Select>
-                            </FormControl>
+
+                            <Grid container>
+                                <Grid item xs={12}>
+                                    <FormControl className={classes.field}>
+                                        <InputLabel>Event</InputLabel>
+                                        <Select value={selectedEvent} onChange={handleEventDropdownSelect}>
+                                            {eventHashes ? eventHashes.map((element, index) => {
+                                                return (
+                                                    <MenuItem value={element} key={index}>
+                                                        {eventHashes[index]}
+                                                    </MenuItem>
+                                                )
+                                                }) : null
+                                            }
+                                        </Select>
+                                    </FormControl>
+                                </Grid>
+                                <Grid item xs={9}>
+                                    <Box
+                                        sx={{
+                                            textAlign: "left",
+                                            ml: 2,
+                                            mb: 1
+                                        }}
+                                    >
+                                        {selectedEvent ? "Tickets Sold:" : null}
+                                    </Box>
+                                </Grid>
+                                <Grid item xs={3}>
+                                    <Box
+                                        sx={{
+                                            textAlign: "center",
+                                            mr: 2,
+                                            mb: 1
+                                        }}
+                                    >
+                                        <Typography align="center">{selectedEvent ? `${eventTicketQuantityIssued} / ${eventTicketQuantity}` : null}</Typography>
+                                    </Box>
+                                </Grid>
+                            </Grid>
                         </Card>
                     )
                 } catch (err) { return null }
@@ -147,6 +175,17 @@ const Manage = () => {
             console.log(eventHashArray)
         }
     }, [events])
+
+    useEffect(async () => {
+        try {
+            const selectedEventData = await ticketSales.events(selectedEvent)
+            setEventTicketQuantity(selectedEventData.ticketQuantity)
+            setEventTicketQuantityIssued(selectedEventData.ticketQuantityIssued)
+        } catch (err) {
+            console.log("No valid selectedEvent")
+            console.log(err)
+        }
+    }, [selectedEvent])
 
     return (
         <div align="center">
@@ -184,28 +223,28 @@ const Manage = () => {
                             <Button text={txStateClaimButton=="None" ? "Claim" : txStateClaimButton} onClick={handleClaim}></Button>
                         </Box>
                     </Grid>
-                    <Grid item xs={8}>
+                    <Grid item xs={7}>
                         <Box
                             sx={{
                                 textAlign: "right",
                                 mt: 1,
                                 mb: 1,
-                                mr: 2
+                                mr: 1
                             }}
                         >
                             {claimBalance}
                         </Box>
                     </Grid>
-                    <Grid item xs={1}>
+                    <Grid item xs={2}>
                         <Box
                             sx={{
-                                textAlign: "right",
+                                textAlign: "center",
                                 mr: 2,
                                 mt: 1,
                                 mb: 1
                             }}
                         >
-                            <Typography align="right">DAI</Typography>
+                            <Typography align="center">DAI</Typography>
                         </Box>
                     </Grid>
                 </Grid>
