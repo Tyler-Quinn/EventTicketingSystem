@@ -33,6 +33,8 @@ const Manage = () => {
     const [selectedEvent, setSelectedEvent] = useState(undefined)
     const [eventTicketQuantity, setEventTicketQuantity] = useState(undefined)
     const [eventTicketQuantityIssued, setEventTicketQuantityIssued] = useState(undefined)
+    const [addCheckerAddress, setAddCheckerAddress] = useState("")
+    const [giftTicketAddress, setGiftTicketAddress] = useState("")
 
     const { provider, address, ticketSales, dai } = useWeb3Context()
 
@@ -43,17 +45,32 @@ const Manage = () => {
                     const tx = await ticketSales.claimBalance(dai.address.toString(), ethers.utils.formatBytes32String('DAI'))
                     setTxStateClaimButton("Pending")
                     checkBalanceClaimed()
-                } else {
-                    throw new Error("Cannot connect to ticketSales contract")
-                }
-            } else {
-                throw new Error("No valid provider")
-            }
+                } else { throw new Error("Cannot connect to ticketSales contract") }
+            } else { throw new Error("No valid provider") }
         } catch (err) {
             setTxStateClaimButton("None")
             console.log("Cannot write to ticketSales contract")
             console.log(err)
         }
+    }
+
+    const handleAddChecker = async () => {
+        try {
+            if (provider) {
+                if (ticketSales) {
+                    if (ethers.utils.isHexString(addCheckerAddress) && (ethers.utils.hexDataLength(addCheckerAddress)==20)) {
+                        const tx = await ticketSales.addChecker(selectedEvent, addCheckerAddress)
+                    } else { throw new Error("Error when adding checker") }
+                } else { throw new Error("Cannot connect to ticketSales contract") }
+            } else { throw new Error("No valid provider") }
+        } catch (err) {
+            console.log("Cannot add checker")
+            console.log(err)
+        }
+    }
+
+    const handleAddCheckerTextField = (e) => {
+        setAddCheckerAddress(e.target.value)
     }
 
     const handleShowEvents = async (e) => {
@@ -106,7 +123,14 @@ const Manage = () => {
 
                             <Grid container>
                                 <Grid item xs={12}>
-                                    <FormControl className={classes.field}>
+                                    <FormControl 
+                                        className={classes.field}
+                                        sx={{
+                                            textAlign: "center",
+                                            ml: 2,
+                                            mr: 2
+                                        }}
+                                    >
                                         <InputLabel>Event</InputLabel>
                                         <Select value={selectedEvent} onChange={handleEventDropdownSelect}>
                                             {eventHashes ? eventHashes.map((element, index) => {
@@ -140,6 +164,46 @@ const Manage = () => {
                                         }}
                                     >
                                         <Typography align="center">{selectedEvent ? `${eventTicketQuantityIssued} / ${eventTicketQuantity}` : null}</Typography>
+                                    </Box>
+                                </Grid>
+                                <Grid item xs={12}>
+                                    <Box
+                                        sx={{
+                                            textAlign: "left",
+                                            ml: 2,
+                                            mb: 1
+                                        }}
+                                    >
+                                        <Typography align="left">Add Checker</Typography>
+                                    </Box>
+                                </Grid>
+                                <Grid item xs={3}>
+                                    <Box
+                                        sx={{
+                                            textAlign: "left",
+                                            ml: 2,
+                                            mb: 1
+                                        }}
+                                    >
+                                        <Button text="Add" onClick={handleAddChecker}></Button>
+                                    </Box>
+                                </Grid>
+                                <Grid item xs={9}>
+                                    <Box
+                                        sx={{
+                                            textAlign: "left",
+                                            ml: 1,
+                                            mr: 1
+                                        }}
+                                    >
+                                        <TextField
+                                            className={classes.field}
+                                            id="outlined-basic"
+                                            label="Checker Address"
+                                            type={"text"}
+                                            variant="outlined"
+                                            onChange={handleAddCheckerTextField}
+                                        />
                                     </Box>
                                 </Grid>
                             </Grid>
