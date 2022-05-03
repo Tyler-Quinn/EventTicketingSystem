@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import { TextField, makeStyles, Typography } from '@material-ui/core'
+import Card from '@material-ui/core/Card'
+import Grid from '@material-ui/core/Grid'
+import Box from '@material-ui/core/Box'
 import Button from '../../components/buttons/Button'
 import { useWeb3Context } from '../../contexts/Web3Context'
 import { ethers } from 'ethers'
@@ -111,33 +114,89 @@ const Create = () => {
             <Typography variant="h4">
                 Create Event
             </Typography>
-            <TextField
+
+            <Card
                 className={classes.field}
-                id="outlined-basic"
-                label="Name"
-                type={"text"}
-                variant="outlined"
-                onChange={handleNameChange}
-            />
-            <TextField
-                className={classes.field}
-                id="outlined-basic"
-                label="Price (Dai)"
-                type="text"
-                variant="outlined"
-                onChange={handlePriceChange}
-                value={price}
-            />
-            <TextField
-                className={classes.field}
-                id="outlined-basic"
-                label="Ticket Quantity"
-                type="text"
-                variant="outlined"
-                onChange={handleTicketQuantityChange}
-                value={quantity}
-            />
-            <Button text={txState=="None" ? "Create" : txState} onClick={handleCreateEvent}></Button>
+            >
+                <Grid container>
+                <Grid item xs={12}>
+                        <Box
+                            sx={{
+                                textAlign: "left",
+                                ml: 2,
+                            }}
+                        >
+                            <Typography variant="h6">
+                                Event Configuration
+                            </Typography>
+                        </Box>
+                    </Grid>
+                    <Grid item xs={12}>
+                        <Box
+                            sx={{
+                                ml: 1,
+                                mr: 1,
+                            }}
+                        >
+                            <TextField
+                                className={classes.field}
+                                id="outlined-basic"
+                                label="Name"
+                                type={"text"}
+                                variant="outlined"
+                                onChange={handleNameChange}
+                            />
+                        </Box>
+                    </Grid>
+                    <Grid item xs={12}>
+                        <Box
+                            sx={{
+                                ml: 1,
+                                mr: 1,
+                            }}
+                        >
+                            <TextField
+                                className={classes.field}
+                                id="outlined-basic"
+                                label="Price (Dai)"
+                                type="text"
+                                variant="outlined"
+                                onChange={handlePriceChange}
+                                value={price}
+                            />
+                        </Box>
+                    </Grid>
+                    <Grid item xs={12}>
+                        <Box
+                            sx={{
+                                ml: 1,
+                                mr: 1,
+                            }}
+                        >
+                            <TextField
+                                className={classes.field}
+                                id="outlined-basic"
+                                label="Ticket Quantity"
+                                type="text"
+                                variant="outlined"
+                                onChange={handleTicketQuantityChange}
+                                value={quantity}
+                            />
+                        </Box>
+                    </Grid>
+                    <Grid item xs={12}>
+                        <Box
+                            sx={{
+                                ml: 1,
+                                mr: 1,
+                                mb: 1
+                            }}
+                        >
+                            <Button text={txState=="None" ? "Create" : txState} onClick={handleCreateEvent}></Button>
+                        </Box>
+                    </Grid>
+                </Grid>
+            </Card>
         </div>
     )
 }
