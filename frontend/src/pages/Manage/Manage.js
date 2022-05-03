@@ -33,7 +33,7 @@ const Manage = () => {
     const [selectedEvent, setSelectedEvent] = useState(undefined)
     const [eventTicketQuantity, setEventTicketQuantity] = useState(undefined)
     const [eventTicketQuantityIssued, setEventTicketQuantityIssued] = useState(undefined)
-    const [addCheckerAddress, setAddCheckerAddress] = useState("")
+    const [checkerAddress, setCheckerAddress] = useState("")
     const [giftTicketAddress, setGiftTicketAddress] = useState("")
 
     const { provider, address, ticketSales, dai } = useWeb3Context()
@@ -58,8 +58,10 @@ const Manage = () => {
         try {
             if (provider) {
                 if (ticketSales) {
-                    if (ethers.utils.isHexString(addCheckerAddress) && (ethers.utils.hexDataLength(addCheckerAddress)==20)) {
-                        const tx = await ticketSales.addChecker(selectedEvent, addCheckerAddress)
+                    if (ethers.utils.isHexString(checkerAddress) &&
+                        (ethers.utils.hexDataLength(checkerAddress)==20))
+                    {
+                        const tx = await ticketSales.addChecker(selectedEvent, checkerAddress)
                     } else { throw new Error("Error when adding checker") }
                 } else { throw new Error("Cannot connect to ticketSales contract") }
             } else { throw new Error("No valid provider") }
@@ -69,8 +71,49 @@ const Manage = () => {
         }
     }
 
-    const handleAddCheckerTextField = (e) => {
-        setAddCheckerAddress(e.target.value)
+    const handleRemoveChecker = async () => {
+        try {
+            if (provider) {
+                if (ticketSales) {
+                    if (ethers.utils.isHexString(checkerAddress) &&
+                        (ethers.utils.hexDataLength(checkerAddress)==20))
+                    {
+                        const tx = await ticketSales.removeChecker(selectedEvent, checkerAddress)
+                    } else { throw new Error("Error when removing checker") }
+                } else { throw new Error("Cannot connect to ticketSales contract") }
+            } else { throw new Error("No valid provider") }
+        } catch (err) {
+            console.log("Cannot remove checker")
+            console.log(err)
+        }
+    }
+
+    const handleCheckerTextField = (e) => {
+        setCheckerAddress(e.target.value)
+    }
+
+    const handleGiftTicket = async () => {
+        try {
+            if (provider) {
+                console.log(`isHexString: ${ethers.utils.isHexString(giftTicketAddress)}`)
+                console.log(`hexDataLength: ${ethers.utils.hexDataLength(giftTicketAddress)}`)
+                if (ticketSales) {
+                    if (ethers.utils.isHexString(giftTicketAddress) &&
+                        (ethers.utils.hexDataLength(giftTicketAddress)==20) &&
+                        (eventTicketQuantityIssued<eventTicketQuantity))
+                    {
+                        const tx = await ticketSales.ownerIssueTicket(selectedEvent, giftTicketAddress)
+                    } else { throw new Error("Error when gifting ticket") }
+                } else { throw new Error("Cannot connect to ticketSales contract") }
+            } else { throw new Error("No valid provider") }
+        } catch (err) {
+            console.log("Cannot gift ticket")
+            console.log(err)
+        }
+    }
+
+    const handleGiftTicketTextField = (e) => {
+        setGiftTicketAddress(e.target.value)
     }
 
     const handleShowEvents = async (e) => {
@@ -163,7 +206,11 @@ const Manage = () => {
                                             mb: 1
                                         }}
                                     >
-                                        <Typography align="center">{selectedEvent ? `${eventTicketQuantityIssued} / ${eventTicketQuantity}` : null}</Typography>
+                                        <Typography
+                                            align="center"
+                                        >
+                                            {selectedEvent ? `${eventTicketQuantityIssued} / ${eventTicketQuantity}` : null}
+                                        </Typography>
                                     </Box>
                                 </Grid>
                                 <Grid item xs={12}>
@@ -171,24 +218,34 @@ const Manage = () => {
                                         sx={{
                                             textAlign: "left",
                                             ml: 2,
+                                            mt: 2,
                                             mb: 1
                                         }}
                                     >
-                                        <Typography align="left">Add Checker</Typography>
+                                        <Typography align="left">Manage Checkers</Typography>
                                     </Box>
                                 </Grid>
-                                <Grid item xs={3}>
+                                <Grid item xs={6}>
                                     <Box
                                         sx={{
                                             textAlign: "left",
                                             ml: 2,
-                                            mb: 1
                                         }}
                                     >
-                                        <Button text="Add" onClick={handleAddChecker}></Button>
+                                        <Button text="Add Checker" onClick={handleAddChecker}></Button>
                                     </Box>
                                 </Grid>
-                                <Grid item xs={9}>
+                                <Grid item xs={6}>
+                                    <Box
+                                        sx={{
+                                            textAlign: "right",
+                                            mr: 2,
+                                        }}
+                                    >
+                                        <Button text="Remove Checker" onClick={handleRemoveChecker}></Button>
+                                    </Box>
+                                </Grid>
+                                <Grid item xs={12}>
                                     <Box
                                         sx={{
                                             textAlign: "left",
@@ -202,7 +259,48 @@ const Manage = () => {
                                             label="Checker Address"
                                             type={"text"}
                                             variant="outlined"
-                                            onChange={handleAddCheckerTextField}
+                                            onChange={handleCheckerTextField}
+                                        />
+                                    </Box>
+                                </Grid>
+                                <Grid item xs={12}>
+                                    <Box
+                                        sx={{
+                                            textAlign: "left",
+                                            ml: 2,
+                                            mt: 2
+                                        }}
+                                    >
+                                        <Typography align="left">Gift Ticket</Typography>
+                                    </Box>
+                                </Grid>
+                                <Grid item xs={2}>
+                                    <Box
+                                        sx={{
+                                            textAlign: "left",
+                                            ml: 2,
+                                            mt: 4,
+                                            mb: 1
+                                        }}
+                                    >
+                                        <Button text="Gift" onClick={handleGiftTicket}></Button>
+                                    </Box>
+                                </Grid>
+                                <Grid item xs={10}>
+                                    <Box
+                                        sx={{
+                                            textAlign: "left",
+                                            ml: 1,
+                                            mr: 1
+                                        }}
+                                    >
+                                        <TextField
+                                            className={classes.field}
+                                            id="outlined-basic"
+                                            label="Giftee Address"
+                                            type={"text"}
+                                            variant="outlined"
+                                            onChange={handleGiftTicketTextField}
                                         />
                                     </Box>
                                 </Grid>
@@ -240,15 +338,18 @@ const Manage = () => {
         }
     }, [events])
 
-    useEffect(async () => {
-        try {
-            const selectedEventData = await ticketSales.events(selectedEvent)
-            setEventTicketQuantity(selectedEventData.ticketQuantity)
-            setEventTicketQuantityIssued(selectedEventData.ticketQuantityIssued)
-        } catch (err) {
-            console.log("No valid selectedEvent")
-            console.log(err)
+    useEffect(() => {
+        async function updateData() {
+            try {
+                const selectedEventData = await ticketSales.events(selectedEvent)
+                setEventTicketQuantity(selectedEventData.ticketQuantity)
+                setEventTicketQuantityIssued(selectedEventData.ticketQuantityIssued)
+            } catch (err) {
+                console.log("No valid selectedEvent")
+                console.log(err)
+            }
         }
+        updateData()
     }, [selectedEvent])
 
     return (
@@ -256,8 +357,6 @@ const Manage = () => {
             <Typography variant="h4">
                 Your Events
             </Typography>
-
-            <Button text="Events" onClick={handleShowEvents}></Button>
 
             <Card
                 className={classes.field}
@@ -284,7 +383,7 @@ const Manage = () => {
                                 mb: 1
                             }}
                         >
-                            <Button text={txStateClaimButton=="None" ? "Claim" : txStateClaimButton} onClick={handleClaim}></Button>
+                            <Button text={txStateClaimButton==="None" ? "Claim" : txStateClaimButton} onClick={handleClaim}></Button>
                         </Box>
                     </Grid>
                     <Grid item xs={7}>
