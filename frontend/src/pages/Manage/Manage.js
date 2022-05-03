@@ -116,13 +116,6 @@ const Manage = () => {
         setGiftTicketAddress(e.target.value)
     }
 
-    const handleShowEvents = async (e) => {
-        console.log(events)
-        console.log(eventHashes)
-        console.log(selectedEvent)
-        console.log(eventTicketQuantity)
-    } 
-
     const handleEventDropdownSelect = async (e) => {
         await setSelectedEvent(e.target.value)
     }
@@ -163,7 +156,6 @@ const Manage = () => {
                         <Card
                             className={classes.field}
                         >
-
                             <Grid container>
                                 <Grid item xs={12}>
                                     <FormControl 
