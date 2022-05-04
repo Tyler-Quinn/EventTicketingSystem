@@ -28,20 +28,18 @@ contract TicketSales is TicketAccounting, Ownable {
     /* ===== Functions ===== */
 
     // Owner of the Event can send tickets for free
-    function ownerIssueTicket(string memory _eventName, address _receiveAddress) external eventExists(_eventName) ticketsAvailable(_eventName) onlyEventOwner(_eventName) {
-        bytes32 eventNameHash = keccak256(abi.encodePacked(_eventName));
-        issueTicket(_eventName, _receiveAddress);
-        emit TicketBought(eventNameHash, msg.sender, _receiveAddress);
+    function ownerIssueTicket(bytes32 _eventNameHash, address _receiveAddress) external eventExists(_eventNameHash) ticketsAvailable(_eventNameHash) onlyEventOwner(_eventNameHash) {
+        issueTicket(_eventNameHash, _receiveAddress);
+        emit TicketBought(_eventNameHash, msg.sender, _receiveAddress);
     }
 
     // Purchase a ticket with DAI
-    function buyTicketDai(string memory _eventName, address _receiveAddress) external eventExists(_eventName) ticketsAvailable(_eventName) {
-        bytes32 eventNameHash = keccak256(abi.encodePacked(_eventName));
-        require(dai.balanceOf(msg.sender) >= events[eventNameHash].ticketPrice, "Does not have enough DAI");
-        issueTicket(_eventName, _receiveAddress);
-        balances[events[eventNameHash].owner]["DAI"] = balances[events[eventNameHash].owner]["DAI"].add(events[eventNameHash].ticketPrice);
-        dai.transferFrom(msg.sender, address(this), events[eventNameHash].ticketPrice);
-        emit TicketBought(eventNameHash, msg.sender, _receiveAddress);
+    function buyTicketDai(bytes32 _eventNameHash, address _receiveAddress) external eventExists(_eventNameHash) ticketsAvailable(_eventNameHash) {
+        require(dai.balanceOf(msg.sender) >= events[_eventNameHash].ticketPrice, "Does not have enough DAI");
+        issueTicket(_eventNameHash, _receiveAddress);
+        balances[events[_eventNameHash].owner]["DAI"] = balances[events[_eventNameHash].owner]["DAI"].add(events[_eventNameHash].ticketPrice);
+        dai.transferFrom(msg.sender, address(this), events[_eventNameHash].ticketPrice);
+        emit TicketBought(_eventNameHash, msg.sender, _receiveAddress);
     }
 
     function claimBalance(bytes32 _asset) external {

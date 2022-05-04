@@ -48,12 +48,12 @@ contract("TicketSales", accounts => {
             assert(false);
             return;
         }
-        let result = await ticketSales.getEventData('TestEvent0');
+        let result = await ticketSales.getEventData(web3.utils.soliditySha3('TestEvent0'));
         assert(result[0] == accounts[0]);
         assert(JSON.stringify(result[1]) == JSON.stringify(web3.utils.toBN(web3.utils.toWei('40'))));
         assert(JSON.stringify(result[2]) == JSON.stringify('3'));
         assert(JSON.stringify(result[3]) == JSON.stringify('0'));
-        result = await ticketSales.getCheckerStatus('TestEvent0', accounts[0]);
+        result = await ticketSales.getCheckerStatus(web3.utils.soliditySha3('TestEvent0'), accounts[0]);
         assert(result);
     });
 
@@ -71,7 +71,7 @@ contract("TicketSales", accounts => {
 
     it('Cannot add a checker for an Event that does not exist', async () => {
         try {
-            await ticketSales.addChecker('NonexistentEvent', accounts[1], {from: accounts[0]});
+            await ticketSales.addChecker(web3.utils.soliditySha3('NonexistentEvent'), accounts[1], {from: accounts[0]});
         } catch(e) {
             assert(e.message.includes('Event does not exist'));
             return;
@@ -81,7 +81,7 @@ contract("TicketSales", accounts => {
 
     it('Cannot add a checker if not the owner of the Event', async () => {
         try {
-            await ticketSales.addChecker('TestEvent0', accounts[2], {from: accounts[1]});
+            await ticketSales.addChecker(web3.utils.soliditySha3('TestEvent0'), accounts[2], {from: accounts[1]});
         } catch(e) {
             assert(e.message.includes('Must be event owner'));
             return;
@@ -90,21 +90,21 @@ contract("TicketSales", accounts => {
     });
 
     it('Add checker', async () => {
-        let result = await ticketSales.getCheckerStatus('TestEvent0', accounts[1]);
+        let result = await ticketSales.getCheckerStatus(web3.utils.soliditySha3('TestEvent0'), accounts[1]);
         assert(!result);
         try {
-            await ticketSales.addChecker('TestEvent0', accounts[1], {from: accounts[0]});
+            await ticketSales.addChecker(web3.utils.soliditySha3('TestEvent0'), accounts[1], {from: accounts[0]});
         } catch(e) {
             assert(false);
             return;
         }
-        result = await ticketSales.getCheckerStatus('TestEvent0', accounts[1]);
+        result = await ticketSales.getCheckerStatus(web3.utils.soliditySha3('TestEvent0'), accounts[1]);
         assert(result);
     });
 
     it('Cannot add a checker that is already a checker', async () => {
         try {
-            await ticketSales.addChecker('TestEvent0', accounts[1], {from: accounts[0]});
+            await ticketSales.addChecker(web3.utils.soliditySha3('TestEvent0'), accounts[1], {from: accounts[0]});
         } catch(e) {
             assert(e.message.includes('Address is already a checker'));
             return;
@@ -116,7 +116,7 @@ contract("TicketSales", accounts => {
 
     it('Cannot call removeChecker for an Event that does not exist', async () => {
         try {
-            await ticketSales.removeChecker('NonexistentEvent', accounts[1], {from: accounts[0]});
+            await ticketSales.removeChecker(web3.utils.soliditySha3('NonexistentEvent'), accounts[1], {from: accounts[0]});
         } catch(e) {
             assert(e.message.includes('Event does not exist'));
             return;
@@ -126,7 +126,7 @@ contract("TicketSales", accounts => {
 
     it('Cannot call removeChecker if not the owner of the Event', async () => {
         try {
-            await ticketSales.removeChecker('TestEvent0', accounts[2], {from: accounts[1]});
+            await ticketSales.removeChecker(web3.utils.soliditySha3('TestEvent0'), accounts[2], {from: accounts[1]});
         } catch(e) {
             assert(e.message.includes('Must be event owner'));
             return;
@@ -136,7 +136,7 @@ contract("TicketSales", accounts => {
 
     it('Cannot remove a checker that is not a checker', async () => {
         try {
-            await ticketSales.removeChecker('TestEvent0', accounts[2], {from: accounts[0]});
+            await ticketSales.removeChecker(web3.utils.soliditySha3('TestEvent0'), accounts[2], {from: accounts[0]});
         } catch(e) {
             assert(e.message.includes('Address is already not a checker'));
             return;
@@ -145,28 +145,28 @@ contract("TicketSales", accounts => {
     });
 
     it('Remove checker', async () => {
-        let result = await ticketSales.getCheckerStatus('TestEvent0', accounts[1]);
+        let result = await ticketSales.getCheckerStatus(web3.utils.soliditySha3('TestEvent0'), accounts[1]);
         assert(result);
         try {
-            await ticketSales.removeChecker('TestEvent0', accounts[1], {from: accounts[0]});
+            await ticketSales.removeChecker(web3.utils.soliditySha3('TestEvent0'), accounts[1], {from: accounts[0]});
         } catch(e) {
             assert(false);
             return;
         }
-        result = await ticketSales.getCheckerStatus('TestEvent0', accounts[1]);
+        result = await ticketSales.getCheckerStatus(web3.utils.soliditySha3('TestEvent0'), accounts[1]);
         assert(!result);
     });
 
     it('Re-add checker, we want to use account[1] as the checker', async () => {
-        let result = await ticketSales.getCheckerStatus('TestEvent0', accounts[1]);
+        let result = await ticketSales.getCheckerStatus(web3.utils.soliditySha3('TestEvent0'), accounts[1]);
         assert(!result);
         try {
-            await ticketSales.addChecker('TestEvent0', accounts[1], {from: accounts[0]});
+            await ticketSales.addChecker(web3.utils.soliditySha3('TestEvent0'), accounts[1], {from: accounts[0]});
         } catch(e) {
             assert(false);
             return;
         }
-        result = await ticketSales.getCheckerStatus('TestEvent0', accounts[1]);
+        result = await ticketSales.getCheckerStatus(web3.utils.soliditySha3('TestEvent0'), accounts[1]);
         assert(result);
     });
 
@@ -174,7 +174,7 @@ contract("TicketSales", accounts => {
 
     it('Cannot call ownerIssueTicket to an Event that does not exist', async () => {
         try {
-            await ticketSales.ownerIssueTicket('NonexistentEvent', accounts[1], {from: accounts[0]});
+            await ticketSales.ownerIssueTicket(web3.utils.soliditySha3('NonexistentEvent'), accounts[1], {from: accounts[0]});
         } catch(e) {
             assert(e.message.includes('Event does not exist'));
             return;
@@ -184,7 +184,7 @@ contract("TicketSales", accounts => {
 
     it('Cannot call ownerIssueTicket if not the Event owner', async () => {
         try {
-            await ticketSales.ownerIssueTicket('TestEvent0', accounts[1], {from: accounts[2]});
+            await ticketSales.ownerIssueTicket(web3.utils.soliditySha3('TestEvent0'), accounts[1], {from: accounts[2]});
         } catch(e) {
             assert(e.message.includes('Must be event owner'));
             return;
@@ -193,18 +193,18 @@ contract("TicketSales", accounts => {
     });
 
     it('Event owner sends ticket to accounts[1]', async () => {
-        let result = await ticketSales.getTicketStatus('TestEvent0', accounts[1]);
+        let result = await ticketSales.getTicketStatus(web3.utils.soliditySha3('TestEvent0'), accounts[1]);
         assert(JSON.stringify(result) == JSON.stringify(web3.utils.toBN(0)));
-        result = await ticketSales.getEventData('TestEvent0');
+        result = await ticketSales.getEventData(web3.utils.soliditySha3('TestEvent0'));
         assert(JSON.stringify(result[3]) == JSON.stringify(web3.utils.toBN(0)));
         try {
-            await ticketSales.ownerIssueTicket('TestEvent0', accounts[1], {from: accounts[0]});
+            await ticketSales.ownerIssueTicket(web3.utils.soliditySha3('TestEvent0'), accounts[1], {from: accounts[0]});
         } catch(e) {
             assert(false);
         }
-        result = await ticketSales.getTicketStatus('TestEvent0', accounts[1]);
+        result = await ticketSales.getTicketStatus(web3.utils.soliditySha3('TestEvent0'), accounts[1]);
         assert(JSON.stringify(result) == JSON.stringify(web3.utils.toBN(1)));
-        result = await ticketSales.getEventData('TestEvent0');
+        result = await ticketSales.getEventData(web3.utils.soliditySha3('TestEvent0'));
         assert(JSON.stringify(result[3]) == JSON.stringify(web3.utils.toBN(1)));
     });
 
@@ -212,7 +212,7 @@ contract("TicketSales", accounts => {
 
     it('issueTicket cannot issue to an address that already has a ticket', async () => {
         try {
-            await ticketSales.ownerIssueTicket('TestEvent0', accounts[1], {from: accounts[0]});
+            await ticketSales.ownerIssueTicket(web3.utils.soliditySha3('TestEvent0'), accounts[1], {from: accounts[0]});
         } catch(e) {
             assert(e.message.includes('Address already has ticket'));
             return;
@@ -224,7 +224,7 @@ contract("TicketSales", accounts => {
 
     it('Cannot call buyTicketDai to an Event that does not exist', async () => {
         try {
-            await ticketSales.buyTicketDai('NonexistentEvent', accounts[2], {from: accounts[2]});
+            await ticketSales.buyTicketDai(web3.utils.soliditySha3('NonexistentEvent'), accounts[2], {from: accounts[2]});
         } catch(e) {
             assert(e.message.includes('Event does not exist'));
             return;
@@ -240,7 +240,7 @@ contract("TicketSales", accounts => {
             return;
         }
         try {
-            await ticketSales.buyTicketDai('TestEvent1', accounts[2], {from: accounts[2]});
+            await ticketSales.buyTicketDai(web3.utils.soliditySha3('TestEvent1'), accounts[2], {from: accounts[2]});
         } catch(e) {
             assert(e.message.includes('Does not have enough DAI'));
             return;
@@ -259,23 +259,23 @@ contract("TicketSales", accounts => {
 
     it('Purchase ticket with DAI', async () => {
         assert(JSON.stringify(await dai.balanceOf(accounts[2])) == JSON.stringify(await web3.utils.toBN(web3.utils.toWei('10000'))));
-        result = await ticketSales.getTicketStatus('TestEvent0', accounts[2]);
+        result = await ticketSales.getTicketStatus(web3.utils.soliditySha3('TestEvent0'), accounts[2]);
         assert(JSON.stringify(result) == JSON.stringify(web3.utils.toBN(0)));
-        result = await ticketSales.getEventData('TestEvent0');
+        result = await ticketSales.getEventData(web3.utils.soliditySha3('TestEvent0'));
         assert(JSON.stringify(result[3]) == JSON.stringify(web3.utils.toBN(1)));
         result = await ticketSales.balances(accounts[0], web3.utils.asciiToHex('DAI'));
         assert(await JSON.stringify(result) == JSON.stringify(web3.utils.toBN(web3.utils.toWei('0'))));
         try {
-            await ticketSales.buyTicketDai('TestEvent0', accounts[2], {from: accounts[2]});
+            await ticketSales.buyTicketDai(web3.utils.soliditySha3('TestEvent0'), accounts[2], {from: accounts[2]});
         } catch(e) {
             console.log(e.message);
             assert(false);
             return;
         }
         assert(JSON.stringify(await dai.balanceOf(accounts[2])) == JSON.stringify(await web3.utils.toBN(web3.utils.toWei('9960'))));
-        result = await ticketSales.getTicketStatus('TestEvent0', accounts[2]);
+        result = await ticketSales.getTicketStatus(web3.utils.soliditySha3('TestEvent0'), accounts[2]);
         assert(JSON.stringify(result) == JSON.stringify(web3.utils.toBN(1)));
-        result = await ticketSales.getEventData('TestEvent0');
+        result = await ticketSales.getEventData(web3.utils.soliditySha3('TestEvent0'));
         assert(JSON.stringify(result[3]) == JSON.stringify(web3.utils.toBN(2)));
         result = await ticketSales.balances(accounts[0], web3.utils.asciiToHex('DAI'));
         assert(await JSON.stringify(result) == JSON.stringify(web3.utils.toBN(web3.utils.toWei('40'))));
@@ -285,7 +285,7 @@ contract("TicketSales", accounts => {
 
     it('Cannot call transferUnclaimedTicket to an Event that does not exist', async () => {
         try {
-            await ticketSales.transferUnclaimedTicket('NonexistentEvent', accounts[3], {from: accounts[2]});
+            await ticketSales.transferUnclaimedTicket(web3.utils.soliditySha3('NonexistentEvent'), accounts[3], {from: accounts[2]});
         } catch(e) {
             assert(e.message.includes('Event does not exist'));
             return;
@@ -295,7 +295,7 @@ contract("TicketSales", accounts => {
 
     it('Cannot call transferUnclaimedTicket if msg.sender does not have an unclaimed ticket', async () => {
         try {
-            await ticketSales.transferUnclaimedTicket('TestEvent0', accounts[3], {from: accounts[4]});
+            await ticketSales.transferUnclaimedTicket(web3.utils.soliditySha3('TestEvent0'), accounts[3], {from: accounts[4]});
         } catch(e) {
             assert(e.message.includes('msg.sender does not have an unclaimed ticket for this event'));
             return;
@@ -305,7 +305,7 @@ contract("TicketSales", accounts => {
 
     it('Cannot call transferUnclaimedTicket if the receive address already has a ticket', async () => {
         try {
-            await ticketSales.transferUnclaimedTicket('TestEvent0', accounts[2], {from: accounts[1]});
+            await ticketSales.transferUnclaimedTicket(web3.utils.soliditySha3('TestEvent0'), accounts[2], {from: accounts[1]});
         } catch(e) {
             assert(e.message.includes('_receiveAddress already has a ticket'));
             return;
@@ -314,23 +314,23 @@ contract("TicketSales", accounts => {
     });
 
     it('Transfer ticket with transferUnclaimedTicket', async () => {
-        let result = await ticketSales.getTicketStatus('TestEvent0', accounts[2]);
+        let result = await ticketSales.getTicketStatus(web3.utils.soliditySha3('TestEvent0'), accounts[2]);
         assert(JSON.stringify(result) == JSON.stringify(web3.utils.toBN(1)));
-        result = await ticketSales.getTicketStatus('TestEvent0', accounts[3]);
+        result = await ticketSales.getTicketStatus(web3.utils.soliditySha3('TestEvent0'), accounts[3]);
         assert(JSON.stringify(result) == JSON.stringify(web3.utils.toBN(0)));
-        result = await ticketSales.getEventData('TestEvent0');
+        result = await ticketSales.getEventData(web3.utils.soliditySha3('TestEvent0'));
         assert(JSON.stringify(result[3]) == JSON.stringify('2'));
         try {
-            await ticketSales.transferUnclaimedTicket('TestEvent0', accounts[3], {from: accounts[2]});
+            await ticketSales.transferUnclaimedTicket(web3.utils.soliditySha3('TestEvent0'), accounts[3], {from: accounts[2]});
         } catch(e) {
             assert(false);
             return;
         }
-        result = await ticketSales.getTicketStatus('TestEvent0', accounts[2]);
+        result = await ticketSales.getTicketStatus(web3.utils.soliditySha3('TestEvent0'), accounts[2]);
         assert(JSON.stringify(result) == JSON.stringify(web3.utils.toBN(0)));
-        result = await ticketSales.getTicketStatus('TestEvent0', accounts[3]);
+        result = await ticketSales.getTicketStatus(web3.utils.soliditySha3('TestEvent0'), accounts[3]);
         assert(JSON.stringify(result) == JSON.stringify(web3.utils.toBN(1)));
-        result = await ticketSales.getEventData('TestEvent0');
+        result = await ticketSales.getEventData(web3.utils.soliditySha3('TestEvent0'));
         assert(JSON.stringify(result[3]) == JSON.stringify('2'));
     });
 
@@ -338,7 +338,7 @@ contract("TicketSales", accounts => {
 
     it('Cannot call burnUnclaimedTicket to an Event that does not exist', async () => {
         try {
-            await ticketSales.burnUnclaimedTicket('NonexistentEvent', {from: accounts[3]});
+            await ticketSales.burnUnclaimedTicket(web3.utils.soliditySha3('NonexistentEvent'), {from: accounts[3]});
         } catch(e) {
             assert(e.message.includes('Event does not exist'));
             return;
@@ -348,7 +348,7 @@ contract("TicketSales", accounts => {
 
     it('Cannot call burnUnclaimedTicket if msg.sender does not have an unclaimed ticket', async () => {
         try {
-            await ticketSales.burnUnclaimedTicket('TestEvent0', {from: accounts[2]});
+            await ticketSales.burnUnclaimedTicket(web3.utils.soliditySha3('TestEvent0'), {from: accounts[2]});
         } catch(e) {
             assert(e.message.includes('msg.sender does not have an unclaimed ticket for this event'));
             return;
@@ -357,19 +357,19 @@ contract("TicketSales", accounts => {
     });
 
     it('accounts[3] burns unclaimed ticket successfully', async () => {
-        let result = await ticketSales.getEventData('TestEvent0');
+        let result = await ticketSales.getEventData(web3.utils.soliditySha3('TestEvent0'));
         assert(JSON.stringify(result[3]) == JSON.stringify('2'));
-        result = await ticketSales.getTicketStatus('TestEvent0', accounts[3]);
+        result = await ticketSales.getTicketStatus(web3.utils.soliditySha3('TestEvent0'), accounts[3]);
         assert(JSON.stringify(result) == JSON.stringify(web3.utils.toBN(1)));
         try {
-            await ticketSales.burnUnclaimedTicket('TestEvent0', {from: accounts[3]});
+            await ticketSales.burnUnclaimedTicket(web3.utils.soliditySha3('TestEvent0'), {from: accounts[3]});
         } catch(e) {
             assert(false);
             return;
         }
-        result = await ticketSales.getEventData('TestEvent0');
+        result = await ticketSales.getEventData(web3.utils.soliditySha3('TestEvent0'));
         assert(JSON.stringify(result[3]) == JSON.stringify('1'));
-        result = await ticketSales.getTicketStatus('TestEvent0', accounts[3]);
+        result = await ticketSales.getTicketStatus(web3.utils.soliditySha3('TestEvent0'), accounts[3]);
         assert(JSON.stringify(result) == JSON.stringify(web3.utils.toBN(0)));
     });
 
@@ -377,7 +377,7 @@ contract("TicketSales", accounts => {
 
     it('Bring ticket quantity issued to the max', async () => {
         try {
-            await ticketSales.buyTicketDai('TestEvent0', accounts[2], {from: accounts[2]});
+            await ticketSales.buyTicketDai(web3.utils.soliditySha3('TestEvent0'), accounts[2], {from: accounts[2]});
         } catch(e) {
             assert(false);
             return;
@@ -389,12 +389,12 @@ contract("TicketSales", accounts => {
             return;
         }
         try {
-            await ticketSales.buyTicketDai('TestEvent0', accounts[3], {from: accounts[3]});
+            await ticketSales.buyTicketDai(web3.utils.soliditySha3('TestEvent0'), accounts[3], {from: accounts[3]});
         } catch(e) {
             assert(false);
             return;
         }
-        let result = await ticketSales.getEventData('TestEvent0');
+        let result = await ticketSales.getEventData(web3.utils.soliditySha3('TestEvent0'));
         assert(JSON.stringify(result[3]) == JSON.stringify('3'));
     });
 
@@ -402,7 +402,7 @@ contract("TicketSales", accounts => {
 
     it('Cannot call ownerIssueTicket if there are no more tickets available', async () => {
         try {
-            await ticketSales.ownerIssueTicket('TestEvent0', accounts[4], {from: accounts[0]});
+            await ticketSales.ownerIssueTicket(web3.utils.soliditySha3('TestEvent0'), accounts[4], {from: accounts[0]});
         } catch(e) {
             assert(e.message.includes('No more tickets available'));
             return;
@@ -417,7 +417,7 @@ contract("TicketSales", accounts => {
             return;
         }
         try {
-            await ticketSales.buyTicketDai('TestEvent0', accounts[4], {from: accounts[4]});
+            await ticketSales.buyTicketDai(web3.utils.soliditySha3('TestEvent0'), accounts[4], {from: accounts[4]});
         } catch(e) {
             assert(e.message.includes('No more tickets available'));
             return;
@@ -428,7 +428,7 @@ contract("TicketSales", accounts => {
 
     it('Cannot call checkInTicket to an Event that does not exist', async () => {
         try {
-            await ticketSales.checkInTicket('NonexistentEvent', accounts[1], {from: accounts[1]});
+            await ticketSales.checkInTicket(web3.utils.soliditySha3('NonexistentEvent'), accounts[1], {from: accounts[1]});
         } catch(e) {
             assert(e.message.includes('Event does not exist'));
             return;
@@ -438,7 +438,7 @@ contract("TicketSales", accounts => {
 
     it('Cannot call checkInTicket if msg.sender is not a checker for this Event', async () => {
         try {
-            await ticketSales.checkInTicket('TestEvent0', accounts[1], {from: accounts[2]});
+            await ticketSales.checkInTicket(web3.utils.soliditySha3('TestEvent0'), accounts[1], {from: accounts[2]});
         } catch(e) {
             assert(e.message.includes('Must be event checker'));
             return;
@@ -447,41 +447,41 @@ contract("TicketSales", accounts => {
     });
 
     it('Check in unclaimed ticket, unclaimed status changes to claimed', async () => {
-        let result = await ticketSales.getTicketStatus('TestEvent0', accounts[2]);
+        let result = await ticketSales.getTicketStatus(web3.utils.soliditySha3('TestEvent0'), accounts[2]);
         assert(JSON.stringify(result) == JSON.stringify(web3.utils.toBN(1)));
         try {
-            await ticketSales.checkInTicket('TestEvent0', accounts[2], {from: accounts[1]});
+            await ticketSales.checkInTicket(web3.utils.soliditySha3('TestEvent0'), accounts[2], {from: accounts[1]});
         } catch(e) {
             assert(false);
             return;
         }
-        result = await ticketSales.getTicketStatus('TestEvent0', accounts[2]);
+        result = await ticketSales.getTicketStatus(web3.utils.soliditySha3('TestEvent0'), accounts[2]);
         assert(JSON.stringify(result) == JSON.stringify(web3.utils.toBN(2)));
     });
 
     it('Check status of claimed ticket with checkInTicket, status does not change', async () => {
-        let result = await ticketSales.getTicketStatus('TestEvent0', accounts[2]);
+        let result = await ticketSales.getTicketStatus(web3.utils.soliditySha3('TestEvent0'), accounts[2]);
         assert(JSON.stringify(result) == JSON.stringify(web3.utils.toBN(2)));
         try {
-            await ticketSales.checkInTicket('TestEvent0', accounts[2], {from: accounts[1]});
+            await ticketSales.checkInTicket(web3.utils.soliditySha3('TestEvent0'), accounts[2], {from: accounts[1]});
         } catch(e) {
             assert(false);
             return;
         }
-        result = await ticketSales.getTicketStatus('TestEvent0', accounts[2]);
+        result = await ticketSales.getTicketStatus(web3.utils.soliditySha3('TestEvent0'), accounts[2]);
         assert(JSON.stringify(result) == JSON.stringify(web3.utils.toBN(2)));
     });
 
     it('Check status of an address without a ticket with checkInTicket, status does not change', async () => {
-        let result = await ticketSales.getTicketStatus('TestEvent0', accounts[6]);
+        let result = await ticketSales.getTicketStatus(web3.utils.soliditySha3('TestEvent0'), accounts[6]);
         assert(JSON.stringify(result) == JSON.stringify(web3.utils.toBN(0)));
         try {
-            await ticketSales.checkInTicket('TestEvent0', accounts[6], {from: accounts[1]});
+            await ticketSales.checkInTicket(web3.utils.soliditySha3('TestEvent0'), accounts[6], {from: accounts[1]});
         } catch(e) {
             assert(false);
             return;
         }
-        result = await ticketSales.getTicketStatus('TestEvent0', accounts[6]);
+        result = await ticketSales.getTicketStatus(web3.utils.soliditySha3('TestEvent0'), accounts[6]);
         assert(JSON.stringify(result) == JSON.stringify(web3.utils.toBN(0)));
     });
 
